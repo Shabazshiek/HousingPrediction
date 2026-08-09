@@ -106,7 +106,16 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
             </label>
             <select
               value={inputs.TotalBedrooms}
-              onChange={(e) => setInputs(prev => ({ ...prev, TotalBedrooms: parseFloat(e.target.value) }))}
+              onChange={(e) => {
+                const beds = parseFloat(e.target.value);
+                const suggestedRooms = beds === 1 ? 3 : beds === 2 ? 5 : beds === 3 ? 6 : beds === 4 ? 8 : 10;
+                setInputs(prev => ({
+                  ...prev,
+                  TotalBedrooms: beds,
+                  TotalRooms: Math.max(prev.TotalRooms, suggestedRooms),
+                  AskingPrice: prediction?.predicted_price_usd ? Math.round(prediction.predicted_price_usd) : prev.AskingPrice
+                }));
+              }}
               style={{
                 width: '100%',
                 padding: '10px 14px',
@@ -118,11 +127,11 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
                 fontWeight: '600'
               }}
             >
-              <option value={1}>1 Bedroom</option>
-              <option value={2}>2 Bedrooms</option>
-              <option value={3}>3 Bedrooms</option>
-              <option value={4}>4 Bedrooms</option>
-              <option value={5}>5+ Bedrooms</option>
+              <option value={1}>1 Bedroom (3 Rooms)</option>
+              <option value={2}>2 Bedrooms (5 Rooms)</option>
+              <option value={3}>3 Bedrooms (6 Rooms)</option>
+              <option value={4}>4 Bedrooms (8 Rooms)</option>
+              <option value={5}>5+ Bedrooms (10 Rooms)</option>
             </select>
           </div>
 
@@ -138,7 +147,14 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
               max={16}
               step={1}
               value={inputs.TotalRooms}
-              onChange={(e) => setInputs(prev => ({ ...prev, TotalRooms: parseFloat(e.target.value) }))}
+              onChange={(e) => {
+                const rooms = parseFloat(e.target.value);
+                setInputs(prev => ({
+                  ...prev,
+                  TotalRooms: rooms,
+                  AskingPrice: prediction?.predicted_price_usd ? Math.round(prediction.predicted_price_usd) : prev.AskingPrice
+                }));
+              }}
             />
           </div>
 
