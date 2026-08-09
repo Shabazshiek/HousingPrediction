@@ -1,99 +1,81 @@
 import React from 'react';
-import { Building2, Sun, Moon, Download, CheckCircle2 } from 'lucide-react';
+import { Search, Plus, Sun, Moon, Download, Bell, User } from 'lucide-react';
 
-export default function Navbar({ theme, toggleTheme, onExportReport, isExporting }) {
+export default function Navbar({
+  theme,
+  toggleTheme,
+  onExportReport,
+  isExporting,
+  onToggleAddProperty,
+  searchAddress,
+  setSearchAddress
+}) {
   return (
     <header style={{
+      height: '70px',
+      padding: '0 32px',
+      background: 'var(--header-bg)',
+      borderBottom: '1px solid var(--border-color)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '16px 32px',
-      background: 'var(--bg-secondary)',
-      borderBottom: '1px solid var(--border-color)',
       position: 'sticky',
       top: 0,
-      zIndex: 100
+      zIndex: 90
     }}>
-      {/* Brand & Logo */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div style={{
-          width: '42px',
-          height: '42px',
-          borderRadius: '12px',
-          background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#FFF',
-          boxShadow: '0 4px 15px rgba(99, 102, 241, 0.4)'
-        }}>
-          <Building2 size={24} />
-        </div>
-
-        <div>
-          <h1 style={{
-            fontSize: '1.4rem',
-            fontWeight: '800',
-            background: 'linear-gradient(90deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            lineHeight: 1.2
-          }}>
-            California AI Valuation & Buyer Advisor
-          </h1>
-          <p style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '500' }}>
-            Micro-Market Clustering • Quantile LightGBM Models • SHAP Explainability • Spatial Comps Engine
-          </p>
-        </div>
+      {/* Address Search Bar matching Screenshot 1 */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        background: 'var(--input-bg)',
+        border: '1px solid var(--border-color)',
+        padding: '10px 16px',
+        borderRadius: '12px',
+        width: '380px'
+      }}>
+        <Search size={18} color="var(--text-muted)" />
+        <input
+          type="text"
+          value={searchAddress}
+          onChange={(e) => setSearchAddress(e.target.value)}
+          placeholder="Search location address (e.g. Los Angeles, CA)..."
+          style={{
+            background: 'transparent',
+            border: 'none',
+            outline: 'none',
+            color: 'var(--text-main)',
+            fontSize: '13.5px',
+            fontWeight: '500',
+            width: '100%'
+          }}
+        />
       </div>
 
-      {/* Right Controls & Actions */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        {/* API Status Indicator */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '6px 12px',
-          borderRadius: '20px',
-          background: 'rgba(52, 211, 153, 0.1)',
-          border: '1px solid rgba(52, 211, 153, 0.3)',
-          fontSize: '12px',
-          color: '#34D399',
-          fontWeight: '600'
-        }}>
-          <CheckCircle2 size={14} /> FastAPI Engine Online
-        </div>
-
-        {/* Theme Toggle Button */}
+      {/* Right Controls matching Screenshot 1 */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        {/* + Add Property Button matching Screenshot 1 */}
         <button
-          onClick={toggleTheme}
+          onClick={onToggleAddProperty}
           style={{
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '8px 16px',
+            padding: '9px 18px',
             borderRadius: '10px',
             border: '1px solid var(--border-color)',
-            background: 'var(--bg-color)',
+            background: 'var(--card-bg)',
             color: 'var(--text-main)',
+            fontWeight: '700',
+            fontSize: '13.5px',
             cursor: 'pointer',
-            fontWeight: '600',
-            fontSize: '13px'
+            boxShadow: 'var(--shadow-main)'
           }}
         >
-          {theme === 'dark' ? (
-            <>
-              <Sun size={16} color="#F59E0B" /> Light Mode
-            </>
-          ) : (
-            <>
-              <Moon size={16} color="#6366F1" /> Dark Mode
-            </>
-          )}
+          <Plus size={16} color="var(--accent-primary)" /> Add property
         </button>
 
-        {/* Download Report Button */}
+        {/* Export Report Button */}
         <button
           onClick={onExportReport}
           disabled={isExporting}
@@ -101,19 +83,61 @@ export default function Navbar({ theme, toggleTheme, onExportReport, isExporting
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            padding: '8px 18px',
+            padding: '9px 18px',
             borderRadius: '10px',
             border: 'none',
-            background: 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
+            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
             color: '#FFFFFF',
-            cursor: isExporting ? 'not-allowed' : 'pointer',
             fontWeight: '700',
             fontSize: '13.5px',
-            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.35)'
+            cursor: isExporting ? 'not-allowed' : 'pointer',
+            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)'
           }}
         >
           <Download size={16} /> {isExporting ? 'Generating...' : 'Export Report (TXT)'}
         </button>
+
+        {/* Theme Toggle Button */}
+        <button
+          onClick={toggleTheme}
+          style={{
+            width: '38px',
+            height: '38px',
+            borderRadius: '10px',
+            border: '1px solid var(--border-color)',
+            background: 'var(--input-bg)',
+            color: 'var(--text-main)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer'
+          }}
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#2563EB" />}
+        </button>
+
+        {/* User Profile Badge matching Screenshot 1 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '8px', paddingLeft: '14px', borderLeft: '1px solid var(--border-color)' }}>
+          <div style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, #38BDF8 0%, #2563EB 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFF',
+            fontWeight: '700',
+            fontSize: '13px'
+          }}>
+            MC
+          </div>
+          <div>
+            <div style={{ fontSize: '13.5px', fontWeight: '700', color: 'var(--text-main)' }}>Michael Chen</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Pro Valuator</div>
+          </div>
+        </div>
       </div>
     </header>
   );

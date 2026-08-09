@@ -1,7 +1,7 @@
 import React from 'react';
-import { DollarSign, ShieldAlert, Sparkles, TrendingUp, TrendingDown } from 'lucide-react';
+import { Sparkles, TrendingUp, TrendingDown, Clock, ShieldCheck } from 'lucide-react';
 
-export default function MetricCards({ prediction, mispricing }) {
+export default function MetricCards({ prediction, mispricing, selectedCity }) {
   if (!prediction || !mispricing) return null;
 
   const predUSD = prediction.predicted_price_usd || 0;
@@ -18,66 +18,39 @@ export default function MetricCards({ prediction, mispricing }) {
   if (badge === 'RED') badgeStyle = 'badge-red';
 
   return (
-    <div style={{
-      display: 'grid',
-      gridTemplateColumns: 'repeat(3, 1fr)',
-      gap: '24px',
-      marginBottom: '32px'
-    }}>
-      {/* Card 1: Estimated Fair Price */}
-      <div className="glass-card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            AI Estimated Fair Value
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Main Blue Hero Valuation Card matching Screenshot 1 */}
+      <div className="hero-blue-card">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+          <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Sparkles size={16} /> AI Estimated Fair Value
           </span>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(99, 102, 241, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#6366F1' }}>
-            <Sparkles size={18} />
-          </div>
-        </div>
-        <div style={{ fontSize: '32px', fontWeight: '800', color: 'var(--text-main)', letterSpacing: '-0.5px' }}>
-          ${Math.round(predUSD).toLocaleString()}
-        </div>
-        <div style={{ fontSize: '13px', fontWeight: '600', color: '#818CF8', marginTop: '6px' }}>
-          Geographic Micro-Market Cluster #{clusterId}
-        </div>
-      </div>
-
-      {/* Card 2: 90% Confidence Interval */}
-      <div className="glass-card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            90% Confidence Interval
-          </span>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(56, 189, 248, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#38BDF8' }}>
-            <DollarSign size={18} />
-          </div>
-        </div>
-        <div style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-main)', marginTop: '4px' }}>
-          ${Math.round(lowerUSD).toLocaleString()} - ${Math.round(upperUSD).toLocaleString()}
-        </div>
-        <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', marginTop: '6px' }}>
-          Quantile LightGBM Error Bounds
-        </div>
-      </div>
-
-      {/* Card 3: Market Price Evaluation */}
-      <div className="glass-card">
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-          <span style={{ fontSize: '12.5px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-            Market Listing Evaluation
-          </span>
-          <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(244, 114, 182, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#F472B6' }}>
-            <ShieldAlert size={18} />
-          </div>
-        </div>
-        <div style={{ marginTop: '4px' }}>
-          <span className={`badge ${badgeStyle}`} style={{ fontSize: '15px', padding: '6px 16px' }}>
+          <span className={`badge ${badgeStyle}`} style={{ fontSize: '13px', background: 'rgba(255, 255, 255, 0.2)', color: '#FFF', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
             {status}
           </span>
         </div>
-        <div style={{ fontSize: '13px', fontWeight: '600', color: diffPct < 0 ? '#34D399' : diffPct > 0 ? '#F87171' : 'var(--text-muted)', marginTop: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {diffPct < 0 ? <TrendingDown size={15} /> : <TrendingUp size={15} />}
-          {diffPct > 0 ? `+${diffPct.toFixed(1)}%` : `${diffPct.toFixed(1)}%`} vs AI Baseline Valuation
+
+        {/* Large Hero Price matching Screenshot 1 */}
+        <div style={{ fontSize: '44px', fontWeight: '800', letterSpacing: '-1px', margin: '4px 0 6px 0' }}>
+          ${Math.round(predUSD).toLocaleString()}
+        </div>
+
+        {/* Subtitle Confidence Range matching Screenshot 1 */}
+        <div style={{ fontSize: '15px', fontWeight: '600', opacity: 0.95, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span>${Math.round(lowerUSD / 1000)}k - ${Math.round(upperUSD / 1000)}k</span>
+          <span>•</span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <ShieldCheck size={16} /> 90% Quantile Confidence
+          </span>
+        </div>
+
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.25)', margin: '16px 0 12px 0' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12.5px', opacity: 0.85 }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <Clock size={14} /> Updated just now
+          </span>
+          <span>Micro-Market Cluster #{clusterId} ({selectedCity})</span>
         </div>
       </div>
     </div>

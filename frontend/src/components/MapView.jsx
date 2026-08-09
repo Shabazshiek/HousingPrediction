@@ -15,11 +15,16 @@ function RecenterMap({ lat, lon, zoom }) {
   const map = useMap();
   useEffect(() => {
     map.setView([lat, lon], zoom);
+    // Invalidate size to fix Leaflet gray box bug
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+    return () => clearTimeout(timer);
   }, [lat, lon, zoom, map]);
   return null;
 }
 
-export default function MapView({ lat, lon, zoom = 11, theme, prediction, economicHubs }) {
+export default function MapView({ lat, lon, zoom = 11, theme, prediction, economicHubs, selectedCity }) {
   const predUSD = prediction?.predicted_price_usd || 0;
   const features = prediction?.features || {};
 
@@ -36,24 +41,37 @@ export default function MapView({ lat, lon, zoom = 11, theme, prediction, econom
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ height: '420px', borderRadius: '14px', overflow: 'hidden', border: '1px solid var(--border-color)', boxShadow: '0 8px 25px rgba(0,0,0,0.15)' }}>
-        <MapContainer center={[lat, lon]} zoom={zoom} style={{ height: '100%', width: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%' }}>
+      {/* Map Container */}
+      <div style={{
+        height: '460px',
+        width: '100%',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        border: '1px solid var(--border-color)',
+        boxShadow: 'var(--shadow-main)',
+        position: 'relative'
+      }}>
+        <MapContainer
+          center={[lat, lon]}
+          zoom={zoom}
+          style={{ height: '100%', width: '100%', borderRadius: '16px' }}
+        >
           <RecenterMap lat={lat} lon={lon} zoom={zoom} />
           <TileLayer
             attribution='&copy; <a href="https://carto.com/">CARTO</a>'
             url={tileUrl}
           />
           
-          {/* Target Property Marker */}
+          {/* Target Property Marker matching Screenshot 1 */}
           <Marker position={[lat, lon]}>
             <Popup>
-              <strong>Target Property</strong><br />
+              <strong>Target Property ({selectedCity})</strong><br />
               Fair Value: ${Math.round(predUSD).toLocaleString()}
             </Popup>
           </Marker>
 
-          {/* Hub Markers & Connecting Lines */}
+          {/* Hub Markers & Connecting Polyline Lines */}
           {Object.entries(hubs).map(([hubKey, coords]) => {
             const title = hubKey.replace('dist_', '').toUpperCase();
             return (
@@ -71,27 +89,31 @@ export default function MapView({ lat, lon, zoom = 11, theme, prediction, econom
         </MapContainer>
       </div>
 
-      {/* Distance Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '14px' }}>
-        <div style={{ background: 'var(--input-bg)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+      {/* Distance Metric Cards Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
+        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to SF</div>
-          <div style={{ fontSize: '18px', fontWeight: '800', marginTop: '4px' }}>{(features.dist_sf || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_sf || 0).toFixed(1)} km</div>
         </div>
-        <div style={{ background: 'var(--input-bg)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+
+        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to LA</div>
-          <div style={{ fontSize: '18px', fontWeight: '800', marginTop: '4px' }}>{(features.dist_la || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_la || 0).toFixed(1)} km</div>
         </div>
-        <div style={{ background: 'var(--input-bg)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+
+        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to SJ</div>
-          <div style={{ fontSize: '18px', fontWeight: '800', marginTop: '4px' }}>{(features.dist_sj || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_sj || 0).toFixed(1)} km</div>
         </div>
-        <div style={{ background: 'var(--input-bg)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+
+        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to SD</div>
-          <div style={{ fontSize: '18px', fontWeight: '800', marginTop: '4px' }}>{(features.dist_sd || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_sd || 0).toFixed(1)} km</div>
         </div>
-        <div style={{ background: 'var(--input-bg)', padding: '14px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
-          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Coastline Dist</div>
-          <div style={{ fontSize: '18px', fontWeight: '800', marginTop: '4px', color: '#38BDF8' }}>{(features.dist_coastline || 0).toFixed(1)} km</div>
+
+        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+          <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Coast Dist</div>
+          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: '#38BDF8' }}>{(features.dist_coastline || 0).toFixed(1)} km</div>
         </div>
       </div>
     </div>

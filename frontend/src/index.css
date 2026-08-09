@@ -1,58 +1,68 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  --bg-color: #0B0F17;
-  --bg-secondary: #131824;
+  /* Dark Mode Variables */
+  --bg-color: #090D16;
+  --sidebar-bg: #0D121F;
+  --header-bg: #0D121F;
+  --card-bg: #131A29;
+  --card-hero-bg: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
   --border-color: rgba(255, 255, 255, 0.08);
-  --card-bg: linear-gradient(135deg, rgba(26, 31, 46, 0.75) 0%, rgba(16, 20, 30, 0.9) 100%);
-  --card-hover-border: rgba(99, 102, 241, 0.5);
-  --card-hover-shadow: 0 16px 40px 0 rgba(99, 102, 241, 0.25);
-  --accent-primary: #6366F1;
-  --accent-secondary: #8B5CF6;
+  --input-bg: #1A2335;
+  --shadow-main: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
+  --accent-primary: #3B82F6;
+  --accent-purple: #8B5CF6;
   --accent-cyan: #38BDF8;
-  --badge-green-bg: rgba(52, 211, 153, 0.12);
+  
+  --badge-green-bg: rgba(52, 211, 153, 0.15);
   --badge-green-text: #34D399;
   --badge-green-border: rgba(52, 211, 153, 0.4);
-  --badge-red-bg: rgba(248, 113, 113, 0.12);
+
+  --badge-red-bg: rgba(248, 113, 113, 0.15);
   --badge-red-text: #F87171;
   --badge-red-border: rgba(248, 113, 113, 0.4);
-  --badge-blue-bg: rgba(96, 165, 250, 0.12);
+
+  --badge-blue-bg: rgba(96, 165, 250, 0.15);
   --badge-blue-text: #60A5FA;
   --badge-blue-border: rgba(96, 165, 250, 0.4);
-  --input-bg: rgba(18, 22, 32, 0.8);
 }
 
 [data-theme="light"] {
-  --bg-color: #F8FAFC;
-  --bg-secondary: #FFFFFF;
+  /* Premium Soft Ice-Blue & Slate Light Theme */
+  --bg-color: #F1F5F9;
+  --sidebar-bg: #FFFFFF;
+  --header-bg: #FFFFFF;
+  --card-bg: #FFFFFF;
+  --card-hero-bg: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   --text-main: #0F172A;
   --text-muted: #64748B;
   --border-color: #E2E8F0;
-  --card-bg: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
-  --card-hover-border: #3B82F6;
-  --card-hover-shadow: 0 20px 30px -10px rgba(37, 99, 235, 0.15);
+  --input-bg: #F8FAFC;
+  --shadow-main: 0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
   --accent-primary: #2563EB;
-  --accent-secondary: #7C3AED;
+  --accent-purple: #7C3AED;
   --accent-cyan: #0284C7;
+
   --badge-green-bg: #D1FAE5;
   --badge-green-text: #047857;
   --badge-green-border: #10B981;
+
   --badge-red-bg: #FEE2E2;
   --badge-red-text: #B91C1C;
   --badge-red-border: #EF4444;
+
   --badge-blue-bg: #DBEAFE;
   --badge-blue-text: #1D4ED8;
   --badge-blue-border: #3B82F6;
-  --input-bg: #FFFFFF;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
@@ -65,8 +75,8 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
 }
 ::-webkit-scrollbar-track {
   background: var(--bg-color);
@@ -79,22 +89,29 @@ body {
   background: rgba(148, 163, 184, 0.5);
 }
 
-/* Glassmorphism KPI Cards */
-.glass-card {
+/* UI Cards */
+.ui-card {
   background: var(--card-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 10px 30px 0 rgba(0, 0, 0, 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: var(--shadow-main);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.glass-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--card-hover-shadow);
-  border-color: var(--card-hover-border);
+.ui-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 35px -10px rgba(37, 99, 235, 0.12);
+}
+
+.hero-blue-card {
+  background: var(--card-hero-bg);
+  color: #FFFFFF;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+  position: relative;
+  overflow: hidden;
 }
 
 /* Badges */
@@ -150,17 +167,17 @@ input[type=range]::-webkit-slider-thumb {
   cursor: pointer;
   -webkit-appearance: none;
   margin-top: -6px;
-  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
 }
 
-/* Styled Table */
+/* Styled Data Table */
 .custom-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
 .custom-table th {
-  background: rgba(148, 163, 184, 0.1);
+  background: rgba(148, 163, 184, 0.08);
   color: var(--text-muted);
   font-size: 12px;
   font-weight: 700;
@@ -181,5 +198,13 @@ input[type=range]::-webkit-slider-thumb {
   font-size: 14px;
 }
 .custom-table tr:hover td {
-  background: rgba(99, 102, 241, 0.05);
+  background: rgba(37, 99, 235, 0.05);
+}
+
+/* Leaflet Container Fixes */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 16px;
+  z-index: 10;
 }

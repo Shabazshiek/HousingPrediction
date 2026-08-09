@@ -1,7 +1,16 @@
 import React from 'react';
-import { MapPin, Sliders, Home, DollarSign, Layers } from 'lucide-react';
+import { MapPin, Sliders, Home, DollarSign, X } from 'lucide-react';
 
-export default function InputPanel({ cities, selectedCity, setSelectedCity, inputs, setInputs, prediction }) {
+export default function InputPanel({
+  cities,
+  selectedCity,
+  setSelectedCity,
+  inputs,
+  setInputs,
+  prediction,
+  isOpen,
+  onClose
+}) {
   if (!cities) return null;
 
   const cityKeys = Object.keys(cities);
@@ -19,24 +28,35 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
     }
   };
 
-  return (
-    <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+  const content = (
+    <div className="ui-card" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <h3 style={{ fontSize: '1.1rem', fontWeight: '800', color: 'var(--text-main)' }}>
+          Property Details & Listed Price
+        </h3>
+        {isOpen && (
+          <button onClick={onClose} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+            <X size={20} />
+          </button>
+        )}
+      </div>
+
       {/* Section 1: City Selector */}
       <div>
-        <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-          <MapPin size={16} color="#6366F1" /> Select California Metro / Region
+        <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+          <MapPin size={15} color="var(--accent-primary)" /> Select Metro Region
         </label>
         <select
           value={selectedCity}
           onChange={(e) => handleCityChange(e.target.value)}
           style={{
             width: '100%',
-            padding: '12px 16px',
+            padding: '11px 14px',
             borderRadius: '10px',
             border: '1px solid var(--border-color)',
             background: 'var(--input-bg)',
             color: 'var(--text-main)',
-            fontSize: '14px',
+            fontSize: '13.5px',
             fontWeight: '600',
             outline: 'none',
             cursor: 'pointer'
@@ -48,19 +68,19 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
         </select>
       </div>
 
-      {/* Optional Fine-Tune Expandable Slider */}
+      {/* Fine-Tune Expandable Slider */}
       <details style={{
         background: 'rgba(148, 163, 184, 0.05)',
         borderRadius: '10px',
-        padding: '12px 16px',
+        padding: '10px 14px',
         border: '1px solid var(--border-color)'
       }}>
-        <summary style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <summary style={{ fontSize: '12.5px', fontWeight: '600', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
           <Sliders size={14} /> Fine-Tune Coordinates (Lat / Lon)
         </summary>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '10px' }}>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: 'var(--text-muted)', marginBottom: '4px' }}>
               <span>Latitude</span>
               <span>{inputs.Latitude.toFixed(4)}</span>
             </div>
@@ -74,7 +94,7 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
             />
           </div>
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11.5px', color: 'var(--text-muted)', marginBottom: '4px' }}>
               <span>Longitude</span>
               <span>{inputs.Longitude.toFixed(4)}</span>
             </div>
@@ -94,14 +114,14 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
 
       {/* Section 2: Home Specifications */}
       <div>
-        <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '12px' }}>
-          <Home size={16} color="#8B5CF6" /> Property Dimensions & Age
+        <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+          <Home size={15} color="var(--accent-purple)" /> Property Dimensions & Age
         </label>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           {/* Bedrooms */}
           <div>
-            <label style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+            <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
               Bedrooms
             </label>
             <select
@@ -118,12 +138,12 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
               }}
               style={{
                 width: '100%',
-                padding: '10px 14px',
+                padding: '9px 12px',
                 borderRadius: '8px',
                 border: '1px solid var(--border-color)',
                 background: 'var(--input-bg)',
                 color: 'var(--text-main)',
-                fontSize: '13.5px',
+                fontSize: '13px',
                 fontWeight: '600'
               }}
             >
@@ -137,7 +157,7 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
 
           {/* Total Rooms Slider */}
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', marginBottom: '4px' }}>
               <span>Total Rooms (incl. living/dining)</span>
               <span style={{ color: 'var(--accent-primary)', fontWeight: '700' }}>{inputs.TotalRooms} Rooms</span>
             </div>
@@ -160,7 +180,7 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
 
           {/* House Age Category */}
           <div>
-            <label style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+            <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
               Building Age
             </label>
             <select
@@ -168,12 +188,12 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
               onChange={(e) => setInputs(prev => ({ ...prev, HouseAge: parseFloat(e.target.value) }))}
               style={{
                 width: '100%',
-                padding: '10px 14px',
+                padding: '9px 12px',
                 borderRadius: '8px',
                 border: '1px solid var(--border-color)',
                 background: 'var(--input-bg)',
                 color: 'var(--text-main)',
-                fontSize: '13.5px',
+                fontSize: '13px',
                 fontWeight: '600'
               }}
             >
@@ -186,7 +206,7 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
 
           {/* Neighborhood Income Tier */}
           <div>
-            <label style={{ fontSize: '12.5px', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+            <label style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
               Neighborhood Income Tier
             </label>
             <select
@@ -194,12 +214,12 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
               onChange={(e) => setInputs(prev => ({ ...prev, MedInc: parseFloat(e.target.value) }))}
               style={{
                 width: '100%',
-                padding: '10px 14px',
+                padding: '9px 12px',
                 borderRadius: '8px',
                 border: '1px solid var(--border-color)',
                 background: 'var(--input-bg)',
                 color: 'var(--text-main)',
-                fontSize: '13.5px',
+                fontSize: '13px',
                 fontWeight: '600'
               }}
             >
@@ -216,8 +236,8 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
 
       {/* Section 3: Target Listing Price */}
       <div>
-        <label style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-          <DollarSign size={16} color="#34D399" /> Asking Listed Price ($ USD)
+        <label style={{ fontSize: '12px', fontWeight: '700', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+          <DollarSign size={15} color="#34D399" /> Asking Listed Price ($ USD)
         </label>
         <input
           type="number"
@@ -228,12 +248,12 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
           onChange={(e) => setInputs(prev => ({ ...prev, AskingPrice: parseFloat(e.target.value) || 0 }))}
           style={{
             width: '100%',
-            padding: '12px 16px',
+            padding: '11px 14px',
             borderRadius: '10px',
             border: '1px solid var(--border-color)',
             background: 'var(--input-bg)',
             color: 'var(--text-main)',
-            fontSize: '15px',
+            fontSize: '14.5px',
             fontWeight: '700',
             outline: 'none'
           }}
@@ -286,4 +306,34 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
       </div>
     </div>
   );
+
+  // If used inside slide-over modal drawer
+  if (isOpen) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+        background: 'rgba(0, 0, 0, 0.6)',
+        backdropFilter: 'blur(4px)',
+        zIndex: 200,
+        display: 'flex',
+        justifyContent: 'flex-end'
+      }}>
+        <div style={{
+          width: '420px',
+          height: '100%',
+          background: 'var(--bg-secondary)',
+          padding: '24px',
+          overflowY: 'auto'
+        }}>
+          {content}
+        </div>
+      </div>
+    );
+  }
+
+  return content;
 }
