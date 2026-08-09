@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Sliders, Home, DollarSign, Layers } from 'lucide-react';
 
-export default function InputPanel({ cities, selectedCity, setSelectedCity, inputs, setInputs }) {
+export default function InputPanel({ cities, selectedCity, setSelectedCity, inputs, setInputs, prediction }) {
   if (!cities) return null;
 
   const cityKeys = Object.keys(cities);
@@ -222,6 +222,51 @@ export default function InputPanel({ cities, selectedCity, setSelectedCity, inpu
             outline: 'none'
           }}
         />
+
+        {/* Quick Mispricing Presets */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginTop: '10px' }}>
+          <button
+            type="button"
+            onClick={() => {
+              const pred = prediction?.predicted_price_usd || 500000;
+              setInputs(prev => ({ ...prev, AskingPrice: Math.round(pred * 0.85) }));
+            }}
+            style={{
+              padding: '6px 8px', borderRadius: '6px', border: '1px solid rgba(52,211,153,0.4)',
+              background: 'rgba(52,211,153,0.1)', color: '#34D399', fontSize: '11.5px', fontWeight: '700', cursor: 'pointer'
+            }}
+          >
+            🔥 Bargain
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const pred = prediction?.predicted_price_usd || 500000;
+              setInputs(prev => ({ ...prev, AskingPrice: Math.round(pred) }));
+            }}
+            style={{
+              padding: '6px 8px', borderRadius: '6px', border: '1px solid rgba(96,165,250,0.4)',
+              background: 'rgba(96,165,250,0.1)', color: '#60A5FA', fontSize: '11.5px', fontWeight: '700', cursor: 'pointer'
+            }}
+          >
+            ⚖️ Fair Value
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              const pred = prediction?.predicted_price_usd || 500000;
+              setInputs(prev => ({ ...prev, AskingPrice: Math.round(pred * 1.25) }));
+            }}
+            style={{
+              padding: '6px 8px', borderRadius: '6px', border: '1px solid rgba(248,113,113,0.4)',
+              background: 'rgba(248,113,113,0.1)', color: '#F87171', fontSize: '11.5px', fontWeight: '700', cursor: 'pointer'
+            }}
+          >
+            ⚠️ Overpriced
+          </button>
+        </div>
       </div>
     </div>
   );

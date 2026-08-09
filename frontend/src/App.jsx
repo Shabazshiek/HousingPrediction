@@ -150,6 +150,7 @@ export default function App() {
             setSelectedCity={setSelectedCity}
             inputs={inputs}
             setInputs={setInputs}
+            prediction={prediction}
           />
 
           {/* Right Panel Tabs Container */}
