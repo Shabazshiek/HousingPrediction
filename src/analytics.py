@@ -296,7 +296,7 @@ def get_cluster_benchmark_summary() -> dict:
         "improvement_pct": 24.5
     }
 
-def generate_valuation_report(city_name: str, input_dict: dict, prediction_res: dict, misprice_res: dict, comps_df: pd.DataFrame = None) -> str:
+def generate_valuation_report(city_name: str, input_dict: dict, prediction_res: dict, misprice_res: dict, comps_df: pd.DataFrame | None = None) -> str:
     """Generates a formatted executive text report of the property valuation."""
     pred_usd = prediction_res["predicted_price_usd"]
     lower_usd = prediction_res["lower_bound_usd"]

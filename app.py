@@ -87,11 +87,11 @@ st.caption("City-Based Micro-Market Clustering • Quantile LightGBM Models • 
 st.sidebar.markdown("---")
 st.sidebar.header("🌆 Location & Property Specs")
 
-selected_city_name = st.sidebar.selectbox(
+selected_city_name = str(st.sidebar.selectbox(
     "Select California City / Region",
     list(CALIFORNIA_CITIES.keys()),
     index=0
-)
+) or "San Francisco")
 
 city_info = CALIFORNIA_CITIES[selected_city_name]
 base_lat = city_info["lat"]
@@ -105,11 +105,11 @@ with st.sidebar.expander("📍 Fine-Tune Exact Location (Optional)"):
 st.sidebar.markdown("---")
 st.sidebar.subheader("📐 Home Specifications")
 
-bedrooms_str = st.sidebar.selectbox(
+bedrooms_str = str(st.sidebar.selectbox(
     "🛏️ Bedrooms",
     ["1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4 Bedrooms", "5+ Bedrooms"],
     index=2
-)
+) or "3 Bedrooms")
 num_bedrooms = float(bedrooms_str.split()[0].replace("+", ""))
 
 total_rooms = st.sidebar.slider(
@@ -117,11 +117,11 @@ total_rooms = st.sidebar.slider(
     min_value=2, max_value=16, value=max(5, int(num_bedrooms * 2)), step=1
 )
 
-age_category = st.sidebar.selectbox(
+age_category = str(st.sidebar.selectbox(
     "🏗️ Property Age",
     ["Brand New (< 5 yrs)", "Modern (5-15 yrs)", "Established (15-30 yrs)", "Vintage (30+ yrs)"],
     index=2
-)
+) or "Established (15-30 yrs)")
 
 age_map = {
     "Brand New (< 5 yrs)": 3.0,
@@ -129,9 +129,9 @@ age_map = {
     "Established (15-30 yrs)": 22.0,
     "Vintage (30+ yrs)": 40.0
 }
-house_age = age_map[age_category]
+house_age = age_map.get(age_category, 22.0)
 
-income_tier = st.sidebar.selectbox(
+income_tier = str(st.sidebar.selectbox(
     "💰 Neighborhood Income Level",
     [
         "Moderate Income (~$45k)",
@@ -140,7 +140,7 @@ income_tier = st.sidebar.selectbox(
         "Ultra-High Income (~$135k+)"
     ],
     index=1
-)
+) or "Middle Class (~$75k)")
 
 income_map = {
     "Moderate Income (~$45k)": 4.5,
@@ -148,7 +148,7 @@ income_map = {
     "High Income (~$105k)": 10.5,
     "Ultra-High Income (~$135k+)": 13.5
 }
-med_inc = income_map[income_tier]
+med_inc = income_map.get(income_tier, 7.5)
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("💵 Target Listing Verification")
