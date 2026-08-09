@@ -248,7 +248,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 with tab1:
     st.subheader("Geospatial Positioning & California Economic Hub Distances")
     
-    m = folium.Map(location=[lat, lon], zoom_start=city_zoom, tiles="CartoDB dark_matter")
+    m = folium.Map(location=[lat, lon], zoom_start=city_zoom, tiles=folium_tile)
 
     # Add Target Property Marker
     folium.Marker(
@@ -339,8 +339,8 @@ with tab3:
                 'axis': {'range': [None, max(800000, sim_pred_usd * 1.3)], 'tickwidth': 1},
                 'bar': {'color': "#5E6AD2"},
                 'steps': [
-                    {'range': [0, lower_usd], 'color': "#171A21"},
-                    {'range': [lower_usd, upper_usd], 'color': "#2E384B"}
+                    {'range': [0, lower_usd], 'color': "#171A21" if is_dark else "#E9ECEF"},
+                    {'range': [lower_usd, upper_usd], 'color': "#2E384B" if is_dark else "#CED4DA"}
                 ],
             }
         ))
