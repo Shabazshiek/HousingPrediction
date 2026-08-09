@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { Layers, MapPin } from 'lucide-react';
 
-// Fix default Leaflet icon paths
+// Fix default Leaflet icon paths with custom glowing marker
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
@@ -15,7 +16,6 @@ function RecenterMap({ lat, lon, zoom }) {
   const map = useMap();
   useEffect(() => {
     map.setView([lat, lon], zoom);
-    // Invalidate size to fix Leaflet gray box bug
     const timer = setTimeout(() => {
       map.invalidateSize();
     }, 200);
@@ -25,13 +25,22 @@ function RecenterMap({ lat, lon, zoom }) {
 }
 
 export default function MapView({ lat, lon, zoom = 11, theme, prediction, economicHubs, selectedCity }) {
+  const [mapStyle, setMapStyle] = useState('dark'); // 'dark', 'satellite', 'street'
+
   const predUSD = prediction?.predicted_price_usd || 0;
   const features = prediction?.features || {};
 
-  // Tile layer according to active theme
-  const tileUrl = theme === 'dark'
-    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+  // Tile layer mapping for professional GIS maps
+  let tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}';
+  let attribution = '&copy; <a href="https://www.esri.com/">Esri</a>, DeLorme, NAVTEQ';
+
+  if (mapStyle === 'satellite') {
+    tileUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+    attribution = '&copy; <a href="https://www.esri.com/">Esri World Imagery</a>';
+  } else if (mapStyle === 'street' || (theme === 'light' && mapStyle === 'dark')) {
+    tileUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+    attribution = '&copy; <a href="https://carto.com/">CARTO Voyager</a>';
+  }
 
   const hubs = economicHubs || {
     "dist_sf": [37.7749, -122.4194],
@@ -41,10 +50,67 @@ export default function MapView({ lat, lon, zoom = 11, theme, prediction, econom
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', height: '100%' }}>
+      {/* Map Style Selector Pills */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <MapPin size={16} color="var(--accent-primary)" /> {selectedCity} Interactive GIS Map
+        </span>
+
+        <div style={{ display: 'flex', gap: '6px', background: 'var(--input-bg)', padding: '4px', borderRadius: '10px', border: '1px solid var(--border-color)' }}>
+          <button
+            onClick={() => setMapStyle('dark')}
+            style={{
+              padding: '5px 12px',
+              borderRadius: '7px',
+              border: 'none',
+              background: mapStyle === 'dark' ? 'var(--accent-primary)' : 'transparent',
+              color: mapStyle === 'dark' ? '#FFF' : 'var(--text-muted)',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer'
+            }}
+          >
+            🌌 Esri Dark Canvas
+          </button>
+
+          <button
+            onClick={() => setMapStyle('satellite')}
+            style={{
+              padding: '5px 12px',
+              borderRadius: '7px',
+              border: 'none',
+              background: mapStyle === 'satellite' ? 'var(--accent-primary)' : 'transparent',
+              color: mapStyle === 'satellite' ? '#FFF' : 'var(--text-muted)',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer'
+            }}
+          >
+            🛰️ Satellite
+          </button>
+
+          <button
+            onClick={() => setMapStyle('street')}
+            style={{
+              padding: '5px 12px',
+              borderRadius: '7px',
+              border: 'none',
+              background: mapStyle === 'street' ? 'var(--accent-primary)' : 'transparent',
+              color: mapStyle === 'street' ? '#FFF' : 'var(--text-muted)',
+              fontSize: '12px',
+              fontWeight: '700',
+              cursor: 'pointer'
+            }}
+          >
+            🗺️ Street Map
+          </button>
+        </div>
+      </div>
+
       {/* Map Container */}
       <div style={{
-        height: '460px',
+        height: '420px',
         width: '100%',
         borderRadius: '16px',
         overflow: 'hidden',
@@ -59,15 +125,19 @@ export default function MapView({ lat, lon, zoom = 11, theme, prediction, econom
         >
           <RecenterMap lat={lat} lon={lon} zoom={zoom} />
           <TileLayer
-            attribution='&copy; <a href="https://carto.com/">CARTO</a>'
+            attribution={attribution}
             url={tileUrl}
           />
           
-          {/* Target Property Marker matching Screenshot 1 */}
+          {/* Target Property Marker */}
           <Marker position={[lat, lon]}>
             <Popup>
-              <strong>Target Property ({selectedCity})</strong><br />
-              Fair Value: ${Math.round(predUSD).toLocaleString()}
+              <div style={{ padding: '4px', textAlign: 'center' }}>
+                <strong style={{ color: '#2563EB', fontSize: '14px' }}>Target Property ({selectedCity})</strong><br />
+                <span style={{ fontSize: '15px', fontWeight: '800', color: '#0F172A' }}>
+                  Fair Value: ${Math.round(predUSD).toLocaleString()}
+                </span>
+              </div>
             </Popup>
           </Marker>
 
@@ -81,7 +151,7 @@ export default function MapView({ lat, lon, zoom = 11, theme, prediction, econom
                 </Marker>
                 <Polyline
                   positions={[[lat, lon], coords]}
-                  pathOptions={{ color: '#38BDF8', weight: 2, opacity: 0.6, dashArray: '4, 8' }}
+                  pathOptions={{ color: '#F59E0B', weight: 2.5, opacity: 0.8, dashArray: '6, 8' }}
                 />
               </React.Fragment>
             );
@@ -90,30 +160,30 @@ export default function MapView({ lat, lon, zoom = 11, theme, prediction, econom
       </div>
 
       {/* Distance Metric Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '12px' }}>
-        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '10px' }}>
+        <div style={{ background: 'var(--input-bg)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to SF</div>
-          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_sf || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', marginTop: '2px', color: 'var(--text-main)' }}>{(features.dist_sf || 0).toFixed(1)} km</div>
         </div>
 
-        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--input-bg)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to LA</div>
-          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_la || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', marginTop: '2px', color: 'var(--text-main)' }}>{(features.dist_la || 0).toFixed(1)} km</div>
         </div>
 
-        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--input-bg)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to SJ</div>
-          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_sj || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', marginTop: '2px', color: 'var(--text-main)' }}>{(features.dist_sj || 0).toFixed(1)} km</div>
         </div>
 
-        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--input-bg)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Dist to SD</div>
-          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: 'var(--text-main)' }}>{(features.dist_sd || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', marginTop: '2px', color: 'var(--text-main)' }}>{(features.dist_sd || 0).toFixed(1)} km</div>
         </div>
 
-        <div style={{ background: 'var(--input-bg)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+        <div style={{ background: 'var(--input-bg)', padding: '10px', borderRadius: '10px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
           <div style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '700', textTransform: 'uppercase' }}>Coast Dist</div>
-          <div style={{ fontSize: '16px', fontWeight: '800', marginTop: '4px', color: '#38BDF8' }}>{(features.dist_coastline || 0).toFixed(1)} km</div>
+          <div style={{ fontSize: '15px', fontWeight: '800', marginTop: '2px', color: '#F59E0B' }}>{(features.dist_coastline || 0).toFixed(1)} km</div>
         </div>
       </div>
     </div>
