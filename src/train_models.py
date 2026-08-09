@@ -55,7 +55,7 @@ def train_cluster_models():
         joblib.dump(model_upper, f"models/lgbm_upper_cluster_{cluster_id}.joblib")
 
         # Track predictions for overall evaluation
-        preds = model_main.predict(X_cluster)
+        preds = np.asarray(model_main.predict(X_cluster))
         all_y_true.extend(y_cluster)
         all_y_pred.extend(preds)
 

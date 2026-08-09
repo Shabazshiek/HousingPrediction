@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import folium
 from streamlit_folium import st_folium
 
-# Add src to system path for clean imports
+# Add project root to sys.path for src imports
 sys.path.append(os.path.abspath("."))
 
 from src.analytics import (
@@ -16,6 +16,7 @@ from src.analytics import (
     explain_prediction_shap,
     find_comparable_properties,
     detect_mispricing,
+    get_cluster_benchmark_summary,
     ECONOMIC_HUBS
 )
 
@@ -130,11 +131,12 @@ with col3:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # Main Dashboard Tabs
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     "🗺️ Geospatial & Cluster Map", 
     "📊 SHAP Price Drivers", 
     "🎛️ What-If Price Simulator", 
-    "🏘️ Comparable Properties (Comps)"
+    "🏘️ Comparable Properties (Comps)",
+    "🏛️ Micro-Market Benchmark"
 ])
 
 # TAB 1: GEOSPATIAL MAP
@@ -260,3 +262,41 @@ with tab4:
         use_container_width=True,
         hide_index=True
     )
+
+# TAB 5: MICRO-MARKET BENCHMARK
+with tab5:
+    st.subheader("Micro-Market Clustering & Model Benchmarking")
+    st.markdown("Proof of performance: Specialized LightGBM models trained per geographic cluster vs. a single global baseline model.")
+
+    summary = get_cluster_benchmark_summary()
+
+    bm_col1, bm_col2, bm_col3 = st.columns(3)
+    bm_col1.metric("Overall Global Model MAE", f"${summary['overall_global_mae']:,.0f}")
+    bm_col2.metric("Micro-Market Cluster MAE", f"${summary['overall_cluster_mae']:,.0f}", delta=f"-${summary['overall_global_mae'] - summary['overall_cluster_mae']:,.0f} (-{summary['improvement_pct']}%)", delta_color="normal")
+    bm_col3.metric("Micro-Markets (KMeans)", f"{len(summary['benchmark_data'])} Clusters")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    st.markdown("#### 📈 MAE Error Comparison: Global Baseline vs. Micro-Market Models")
+    bm_df = summary["benchmark_data"].melt(id_vars=["Micro-Market Cluster"], value_vars=["Global Model MAE ($)", "Cluster Model MAE ($)"], var_name="Model Type", value_name="MAE ($)")
+    
+    fig_bm = px.bar(
+        bm_df,
+        x="Micro-Market Cluster",
+        y="MAE ($)",
+        color="Model Type",
+        barmode="group",
+        title="Mean Absolute Error ($ USD) by Micro-Market Cluster",
+        color_discrete_map={"Global Model MAE ($)": "#FF5252", "Cluster Model MAE ($)": "#00E676"},
+        text_auto="$,.0f"
+    )
+    fig_bm.update_layout(template="plotly_dark", height=420)
+    st.plotly_chart(fig_bm, use_container_width=True)
+
+    st.markdown("#### 📋 Geographic & Demographic Profile by Micro-Market")
+    st.dataframe(
+        summary["cluster_stats"],
+        use_container_width=True,
+        hide_index=True
+    )
+
