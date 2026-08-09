@@ -36,52 +36,181 @@ is_dark = (theme_mode == "🌙 Dark Mode")
 plotly_template = "plotly_dark" if is_dark else "plotly_white"
 folium_tile = "CartoDB dark_matter" if is_dark else "CartoDB positron"
 
-# Dynamic CSS for Light / Dark Mode
+# Dynamic CSS for Light / Dark Mode with Glassmorphism & Plus Jakarta Sans Font
 if is_dark:
     st.markdown("""
         <style>
-        .main { background-color: #0E1117; color: #FFFFFF; }
-        .stMetric { background-color: #1E222D; padding: 15px; border-radius: 10px; border: 1px solid #2E3440; }
-        .kpi-card {
-            background: linear-gradient(135deg, #1E222D 0%, #171A21 100%);
-            border: 1px solid #2E384B;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        * { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        
+        .main { background: #0B0F17; color: #F1F5F9; }
+        
+        /* Sidebar Styling */
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #131824 0%, #0B0F17 100%) !important;
+            border-right: 1px solid rgba(255,255,255,0.08) !important;
         }
-        .kpi-title { color: #8F9BAE; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .kpi-value { color: #FFFFFF; font-size: 28px; font-weight: 700; margin-top: 5px; }
-        .kpi-sub { color: #5E6AD2; font-size: 14px; margin-top: 5px; font-weight: 500; }
-        .badge-green { color: #00E676; font-weight: bold; background: rgba(0,230,118,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #00E676; }
-        .badge-red { color: #FF5252; font-weight: bold; background: rgba(255,82,82,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #FF5252; }
-        .badge-blue { color: #448AFF; font-weight: bold; background: rgba(68,138,255,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #448AFF; }
+        
+        /* Glassmorphism Metric KPI Cards */
+        .kpi-card {
+            background: linear-gradient(135deg, rgba(26,31,46,0.75) 0%, rgba(16,20,30,0.9) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px 0 rgba(0,0,0,0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 40px 0 rgba(99,102,241,0.25);
+            border: 1px solid rgba(99,102,241,0.5);
+        }
+        .kpi-title {
+            color: #94A3B8;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            color: #FFFFFF;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .kpi-sub {
+            color: #818CF8;
+            font-size: 13.5px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+        
+        /* Badges */
+        .badge-green { color: #34D399; font-weight: 700; background: rgba(52,211,153,0.12); padding: 6px 14px; border-radius: 30px; border: 1px solid rgba(52,211,153,0.4); }
+        .badge-red { color: #F87171; font-weight: 700; background: rgba(248,113,113,0.12); padding: 6px 14px; border-radius: 30px; border: 1px solid rgba(248,113,113,0.4); }
+        .badge-blue { color: #60A5FA; font-weight: 700; background: rgba(96,165,250,0.12); padding: 6px 14px; border-radius: 30px; border: 1px solid rgba(96,165,250,0.4); }
+        
+        /* Tab Navigation Bar */
+        button[data-baseweb="tab"] {
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            border-radius: 10px !important;
+            padding: 10px 18px !important;
+            margin-right: 6px !important;
+            border: 1px solid transparent !important;
+            transition: all 0.2s ease !important;
+        }
+        button[data-baseweb="tab"][aria-selected="true"] {
+            background: linear-gradient(135deg, rgba(99,102,241,0.25) 0%, rgba(139,92,246,0.25) 100%) !important;
+            border: 1px solid #6366F1 !important;
+            color: #A5B4FC !important;
+        }
+        
+        /* Metric Box Container */
+        .stMetric {
+            background: rgba(26,31,46,0.6) !important;
+            border-radius: 12px !important;
+            border: 1px solid rgba(255,255,255,0.08) !important;
+            padding: 16px !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 else:
     st.markdown("""
         <style>
-        .main { background-color: #F8F9FA; color: #1A1D20; }
-        .stMetric { background-color: #FFFFFF; padding: 15px; border-radius: 10px; border: 1px solid #DEE2E6; }
-        .kpi-card {
-            background: #FFFFFF;
-            border: 1px solid #DEE2E6;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        * { font-family: 'Plus Jakarta Sans', sans-serif !important; }
+        
+        .main { background: #F8FAFC; color: #0F172A; }
+        
+        /* Sidebar Styling */
+        [data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%) !important;
+            border-right: 1px solid #E2E8F0 !important;
         }
-        .kpi-title { color: #495057; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .kpi-value { color: #1A1D20; font-size: 28px; font-weight: 700; margin-top: 5px; }
-        .kpi-sub { color: #3B82F6; font-size: 14px; margin-top: 5px; font-weight: 500; }
-        .badge-green { color: #059669; font-weight: bold; background: #D1FAE5; padding: 5px 12px; border-radius: 20px; border: 1px solid #10B981; }
-        .badge-red { color: #DC2626; font-weight: bold; background: #FEE2E2; padding: 5px 12px; border-radius: 20px; border: 1px solid #EF4444; }
-        .badge-blue { color: #2563EB; font-weight: bold; background: #DBEAFE; padding: 5px 12px; border-radius: 20px; border: 1px solid #3B82F6; }
+        
+        /* Glassmorphism Metric KPI Cards */
+        .kpi-card {
+            background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.06), 0 8px 10px -6px rgba(0,0,0,0.01);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -10px rgba(37,99,235,0.15);
+            border: 1px solid #3B82F6;
+        }
+        .kpi-title {
+            color: #64748B;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+        .kpi-value {
+            color: #0F172A;
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .kpi-sub {
+            color: #2563EB;
+            font-size: 13.5px;
+            margin-top: 6px;
+            font-weight: 600;
+        }
+        
+        /* Badges */
+        .badge-green { color: #047857; font-weight: 700; background: #D1FAE5; padding: 6px 14px; border-radius: 30px; border: 1px solid #10B981; }
+        .badge-red { color: #B91C1C; font-weight: 700; background: #FEE2E2; padding: 6px 14px; border-radius: 30px; border: 1px solid #EF4444; }
+        .badge-blue { color: #1D4ED8; font-weight: 700; background: #DBEAFE; padding: 6px 14px; border-radius: 30px; border: 1px solid #3B82F6; }
+        
+        /* Tab Navigation Bar */
+        button[data-baseweb="tab"] {
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            border-radius: 10px !important;
+            padding: 10px 18px !important;
+            margin-right: 6px !important;
+            border: 1px solid transparent !important;
+            transition: all 0.2s ease !important;
+        }
+        button[data-baseweb="tab"][aria-selected="true"] {
+            background: #FFFFFF !important;
+            border: 1px solid #3B82F6 !important;
+            color: #2563EB !important;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.12) !important;
+        }
+        
+        /* Metric Box Container */
+        .stMetric {
+            background: #FFFFFF !important;
+            border-radius: 12px !important;
+            border: 1px solid #E2E8F0 !important;
+            padding: 16px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-st.title("🏠 California Real Estate AI Valuation & Buyer Advisor")
-st.caption("City-Based Micro-Market Clustering • Quantile LightGBM Models • SHAP Explainability • Spatial Comps Engine")
+# Gradient Title Header
+st.markdown("""
+    <div style="margin-bottom: 25px;">
+        <h1 style="background: linear-gradient(90deg, #60A5FA 0%, #A78BFA 50%, #F472B6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; font-size: 2.2rem; margin-bottom: 2px;">🏠 California Real Estate AI Valuation & Buyer Advisor</h1>
+        <p style="color: #94A3B8; font-size: 1.05rem; font-weight: 500; margin-top: 0px;">City-Based Micro-Market Clustering • Quantile LightGBM Models • SHAP Explainability • Spatial Comps Engine</p>
+    </div>
+""", unsafe_allow_html=True)
 
 # Sidebar Property Input Form
 st.sidebar.markdown("---")
