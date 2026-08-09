@@ -17,6 +17,7 @@ from src.analytics import (
     find_comparable_properties,
     detect_mispricing,
     get_cluster_benchmark_summary,
+    generate_valuation_report,
     ECONOMIC_HUBS,
     CALIFORNIA_CITIES
 )
@@ -28,32 +29,62 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for high-end UI styling
-st.markdown("""
-    <style>
-    .main { background-color: #0E1117; }
-    .stMetric { background-color: #1E222D; padding: 15px; border-radius: 10px; border: 1px solid #2E3440; }
-    .kpi-card {
-        background: linear-gradient(135deg, #1E222D 0%, #171A21 100%);
-        border: 1px solid #2E384B;
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    }
-    .kpi-title { color: #8F9BAE; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-    .kpi-value { color: #FFFFFF; font-size: 28px; font-weight: 700; margin-top: 5px; }
-    .kpi-sub { color: #5E6AD2; font-size: 14px; margin-top: 5px; font-weight: 500; }
-    .badge-green { color: #00E676; font-weight: bold; background: rgba(0,230,118,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #00E676; }
-    .badge-red { color: #FF5252; font-weight: bold; background: rgba(255,82,82,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #FF5252; }
-    .badge-blue { color: #448AFF; font-weight: bold; background: rgba(68,138,255,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #448AFF; }
-    </style>
-""", unsafe_allow_html=True)
+# Theme Toggle in Sidebar
+st.sidebar.markdown("### 🎨 Preferences")
+theme_mode = st.sidebar.radio("💡 UI Theme", ["🌙 Dark Mode", "☀️ Light Mode"], horizontal=True)
+is_dark = (theme_mode == "🌙 Dark Mode")
+plotly_template = "plotly_dark" if is_dark else "plotly_white"
+folium_tile = "CartoDB dark_matter" if is_dark else "CartoDB positron"
+
+# Dynamic CSS for Light / Dark Mode
+if is_dark:
+    st.markdown("""
+        <style>
+        .main { background-color: #0E1117; color: #FFFFFF; }
+        .stMetric { background-color: #1E222D; padding: 15px; border-radius: 10px; border: 1px solid #2E3440; }
+        .kpi-card {
+            background: linear-gradient(135deg, #1E222D 0%, #171A21 100%);
+            border: 1px solid #2E384B;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .kpi-title { color: #8F9BAE; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .kpi-value { color: #FFFFFF; font-size: 28px; font-weight: 700; margin-top: 5px; }
+        .kpi-sub { color: #5E6AD2; font-size: 14px; margin-top: 5px; font-weight: 500; }
+        .badge-green { color: #00E676; font-weight: bold; background: rgba(0,230,118,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #00E676; }
+        .badge-red { color: #FF5252; font-weight: bold; background: rgba(255,82,82,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #FF5252; }
+        .badge-blue { color: #448AFF; font-weight: bold; background: rgba(68,138,255,0.15); padding: 5px 12px; border-radius: 20px; border: 1px solid #448AFF; }
+        </style>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+        <style>
+        .main { background-color: #F8F9FA; color: #1A1D20; }
+        .stMetric { background-color: #FFFFFF; padding: 15px; border-radius: 10px; border: 1px solid #DEE2E6; }
+        .kpi-card {
+            background: #FFFFFF;
+            border: 1px solid #DEE2E6;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+        .kpi-title { color: #495057; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .kpi-value { color: #1A1D20; font-size: 28px; font-weight: 700; margin-top: 5px; }
+        .kpi-sub { color: #3B82F6; font-size: 14px; margin-top: 5px; font-weight: 500; }
+        .badge-green { color: #059669; font-weight: bold; background: #D1FAE5; padding: 5px 12px; border-radius: 20px; border: 1px solid #10B981; }
+        .badge-red { color: #DC2626; font-weight: bold; background: #FEE2E2; padding: 5px 12px; border-radius: 20px; border: 1px solid #EF4444; }
+        .badge-blue { color: #2563EB; font-weight: bold; background: #DBEAFE; padding: 5px 12px; border-radius: 20px; border: 1px solid #3B82F6; }
+        </style>
+    """, unsafe_allow_html=True)
 
 st.title("🏠 California Real Estate AI Valuation & Buyer Advisor")
 st.caption("City-Based Micro-Market Clustering • Quantile LightGBM Models • SHAP Explainability • Spatial Comps Engine")
 
 # Sidebar Property Input Form
+st.sidebar.markdown("---")
 st.sidebar.header("🌆 Location & Property Specs")
 
 selected_city_name = st.sidebar.selectbox(
@@ -146,6 +177,25 @@ upper_usd = prediction_res["upper_bound_usd"]
 cluster_id = prediction_res["cluster_id"]
 
 misprice_res = detect_mispricing(actual_price, pred_usd)
+
+# Generate Report Text for Export
+comps_df_report = find_comparable_properties(input_dict, top_n=5)
+report_text = generate_valuation_report(
+    selected_city_name,
+    input_dict,
+    prediction_res,
+    misprice_res,
+    comps_df_report
+)
+
+st.sidebar.markdown("---")
+st.sidebar.subheader("📥 Export & Reports")
+st.sidebar.download_button(
+    label="📄 Download Valuation Report (TXT)",
+    data=report_text,
+    file_name=f"Valuation_Report_{selected_city_name.replace(' ', '_')}.txt",
+    mime="text/plain"
+)
 
 # KPI Metrics Header Cards
 col1, col2, col3 = st.columns(3)
@@ -253,7 +303,7 @@ with tab2:
         text_auto="$,.0f"
     )
     fig_shap.update_traces(marker_color=shap_df["Color"])
-    fig_shap.update_layout(template="plotly_dark", height=450, yaxis={'categoryorder':'total ascending'})
+    fig_shap.update_layout(template=plotly_template, height=450, yaxis={'categoryorder':'total ascending'})
     st.plotly_chart(fig_shap, use_container_width=True)
 
 # TAB 3: WHAT-IF PRICE SIMULATOR
@@ -294,7 +344,7 @@ with tab3:
                 ],
             }
         ))
-        fig_gauge.update_layout(template="plotly_dark", height=400)
+        fig_gauge.update_layout(template=plotly_template, height=400)
         st.plotly_chart(fig_gauge, use_container_width=True)
 
 # TAB 4: COMPARABLE PROPERTIES
@@ -345,7 +395,7 @@ with tab5:
         color_discrete_map={"Global Model MAE ($)": "#FF5252", "Cluster Model MAE ($)": "#00E676"},
         text_auto="$,.0f"
     )
-    fig_bm.update_layout(template="plotly_dark", height=420)
+    fig_bm.update_layout(template=plotly_template, height=420)
     st.plotly_chart(fig_bm, use_container_width=True)
 
     st.markdown("#### 📋 Geographic & Demographic Profile by Micro-Market")
