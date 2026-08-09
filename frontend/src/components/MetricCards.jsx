@@ -1,7 +1,7 @@
 import React from 'react';
-import { Sparkles, TrendingUp, TrendingDown, Clock, ShieldCheck } from 'lucide-react';
+import { Sparkles, ShieldCheck, Clock } from 'lucide-react';
 
-export default function MetricCards({ prediction, mispricing, selectedCity }) {
+export default function MetricCards({ prediction, mispricing, selectedCity, heroTheme = 'red' }) {
   if (!prediction || !mispricing) return null;
 
   const predUSD = prediction.predicted_price_usd || 0;
@@ -9,7 +9,6 @@ export default function MetricCards({ prediction, mispricing, selectedCity }) {
   const upperUSD = prediction.upper_bound_usd || 0;
   const clusterId = prediction.cluster_id ?? 0;
 
-  const diffPct = mispricing.diff_pct || 0;
   const status = mispricing.status || 'Fair Market Value';
   const badge = mispricing.badge || 'BLUE';
 
@@ -17,25 +16,31 @@ export default function MetricCards({ prediction, mispricing, selectedCity }) {
   if (badge === 'GREEN') badgeStyle = 'badge-green';
   if (badge === 'RED') badgeStyle = 'badge-red';
 
+  const cardClass = heroTheme === 'blue'
+    ? 'hero-card-blue'
+    : heroTheme === 'purple'
+    ? 'hero-card-purple'
+    : 'hero-card-red';
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      {/* Main Blue Hero Valuation Card matching Screenshot 1 */}
-      <div className="hero-blue-card">
+      {/* Hero Valuation Card */}
+      <div className={cardClass}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
           <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Sparkles size={16} /> AI Estimated Fair Value
           </span>
-          <span className={`badge ${badgeStyle}`} style={{ fontSize: '13px', background: 'rgba(255, 255, 255, 0.2)', color: '#FFF', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
+          <span className={`badge ${badgeStyle}`} style={{ fontSize: '13px', background: 'rgba(255, 255, 255, 0.22)', color: '#FFF', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
             {status}
           </span>
         </div>
 
-        {/* Large Hero Price matching Screenshot 1 */}
+        {/* Large Hero Price */}
         <div style={{ fontSize: '44px', fontWeight: '800', letterSpacing: '-1px', margin: '4px 0 6px 0' }}>
           ${Math.round(predUSD).toLocaleString()}
         </div>
 
-        {/* Subtitle Confidence Range matching Screenshot 1 */}
+        {/* Subtitle Confidence Range */}
         <div style={{ fontSize: '15px', fontWeight: '600', opacity: 0.95, display: 'flex', alignItems: 'center', gap: '8px' }}>
           <span>${Math.round(lowerUSD / 1000)}k - ${Math.round(upperUSD / 1000)}k</span>
           <span>•</span>

@@ -11,7 +11,8 @@ import BenchmarkTab from './components/BenchmarkTab';
 import { Map, BarChart3, Sliders, Building, Award } from 'lucide-react';
 
 export default function App() {
-  const [theme, setTheme] = useState('light'); // Default to sleek Light Mode
+  const [theme, setTheme] = useState('dark'); // Dark Mode by default with rich obsidian & crimson accent
+  const [heroTheme, setHeroTheme] = useState('red'); // Crimson Red Valuation Dashboard Accent!
   const [cities, setCities] = useState(null);
   const [economicHubs, setEconomicHubs] = useState(null);
   const [selectedCity, setSelectedCity] = useState('Los Angeles');
@@ -143,6 +144,8 @@ export default function App() {
         <Navbar
           theme={theme}
           toggleTheme={toggleTheme}
+          heroTheme={heroTheme}
+          setHeroTheme={setHeroTheme}
           onExportReport={handleExportReport}
           isExporting={isExporting}
           onToggleAddProperty={() => setIsAddPropertyOpen(prev => !prev)}
@@ -164,10 +167,10 @@ export default function App() {
 
           {/* Grid Layout matching Screenshot 1 */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px', alignItems: 'start' }}>
-            {/* Left Column: Hero Blue Valuation Card + SHAP Chart + Controls matching Screenshot 1 */}
+            {/* Left Column: Hero Crimson Valuation Card + SHAP Chart + Controls matching Screenshot 1 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {/* Blue Hero Valuation Card */}
-              <MetricCards prediction={prediction} mispricing={mispricing} selectedCity={selectedCity} />
+              {/* Hero Valuation Card */}
+              <MetricCards prediction={prediction} mispricing={mispricing} selectedCity={selectedCity} heroTheme={heroTheme} />
 
               {/* Embedded SHAP Drivers Card directly underneath matching Screenshot 1 */}
               <div className="ui-card">

@@ -1,18 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-  /* Dark Mode Variables */
-  --bg-color: #090D16;
-  --sidebar-bg: #0D121F;
-  --header-bg: #0D121F;
-  --card-bg: #131A29;
-  --card-hero-bg: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  /* Dark Mode Variables - Deep Obsidian & Glowing Accents */
+  --bg-color: #070A12;
+  --sidebar-bg: #0C101A;
+  --header-bg: #0C101A;
+  --card-bg: #111726;
   --text-main: #F8FAFC;
   --text-muted: #94A3B8;
   --border-color: rgba(255, 255, 255, 0.08);
-  --input-bg: #1A2335;
-  --shadow-main: 0 10px 30px 0 rgba(0, 0, 0, 0.35);
-  --accent-primary: #3B82F6;
+  --input-bg: #172033;
+  --shadow-main: 0 12px 35px 0 rgba(0, 0, 0, 0.45);
+  --accent-primary: #F43F5E;
   --accent-purple: #8B5CF6;
   --accent-cyan: #38BDF8;
   
@@ -30,18 +29,17 @@
 }
 
 [data-theme="light"] {
-  /* Premium Soft Ice-Blue & Slate Light Theme */
+  /* Rich Soft Ice-Blue & Slate Light Theme */
   --bg-color: #F1F5F9;
   --sidebar-bg: #FFFFFF;
   --header-bg: #FFFFFF;
   --card-bg: #FFFFFF;
-  --card-hero-bg: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   --text-main: #0F172A;
   --text-muted: #64748B;
   --border-color: #E2E8F0;
   --input-bg: #F8FAFC;
   --shadow-main: 0 10px 25px -5px rgba(37, 99, 235, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
-  --accent-primary: #2563EB;
+  --accent-primary: #E11D48;
   --accent-purple: #7C3AED;
   --accent-cyan: #0284C7;
 
@@ -101,15 +99,36 @@ body {
 
 .ui-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 35px -10px rgba(37, 99, 235, 0.12);
+  box-shadow: 0 16px 35px -10px rgba(0, 0, 0, 0.25);
 }
 
-.hero-blue-card {
-  background: var(--card-hero-bg);
+/* Vibrant Hero Card Color Themes */
+.hero-card-red {
+  background: linear-gradient(135deg, #F43F5E 0%, #BE123C 100%);
   color: #FFFFFF;
   border-radius: 18px;
   padding: 28px;
-  box-shadow: 0 12px 30px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 14px 35px rgba(244, 63, 94, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card-blue {
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #FFFFFF;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 14px 35px rgba(37, 99, 235, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card-purple {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+  color: #FFFFFF;
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 14px 35px rgba(139, 92, 246, 0.4);
   position: relative;
   overflow: hidden;
 }
@@ -169,7 +188,7 @@ input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   margin-top: -6px;
-  box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.5);
 }
 
 /* Styled Data Table */
@@ -200,7 +219,7 @@ input[type=range]::-webkit-slider-thumb {
   font-size: 14px;
 }
 .custom-table tr:hover td {
-  background: rgba(37, 99, 235, 0.05);
+  background: rgba(244, 63, 94, 0.05);
 }
 
 /* Leaflet Container Fixes */

@@ -1,9 +1,11 @@
 import React from 'react';
-import { Search, Plus, Sun, Moon, Download, Bell, User } from 'lucide-react';
+import { Search, Plus, Sun, Moon, Download, Palette } from 'lucide-react';
 
 export default function Navbar({
   theme,
   toggleTheme,
+  heroTheme,
+  setHeroTheme,
   onExportReport,
   isExporting,
   onToggleAddProperty,
@@ -23,7 +25,7 @@ export default function Navbar({
       top: 0,
       zIndex: 90
     }}>
-      {/* Address Search Bar matching Screenshot 1 */}
+      {/* Address Search Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -52,9 +54,52 @@ export default function Navbar({
         />
       </div>
 
-      {/* Right Controls matching Screenshot 1 */}
+      {/* Right Controls */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-        {/* + Add Property Button matching Screenshot 1 */}
+        {/* Color Theme Accent Pills */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px', borderRadius: '10px', background: 'var(--input-bg)', border: '1px solid var(--border-color)' }}>
+          <button
+            onClick={() => setHeroTheme('red')}
+            title="Crimson Red Theme"
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #F43F5E 0%, #BE123C 100%)',
+              border: heroTheme === 'red' ? '2px solid #FFF' : 'none',
+              cursor: 'pointer',
+              boxShadow: heroTheme === 'red' ? '0 0 8px #F43F5E' : 'none'
+            }}
+          />
+          <button
+            onClick={() => setHeroTheme('blue')}
+            title="Royal Blue Theme"
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+              border: heroTheme === 'blue' ? '2px solid #FFF' : 'none',
+              cursor: 'pointer',
+              boxShadow: heroTheme === 'blue' ? '0 0 8px #2563EB' : 'none'
+            }}
+          />
+          <button
+            onClick={() => setHeroTheme('purple')}
+            title="Electric Purple Theme"
+            style={{
+              width: '24px',
+              height: '24px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+              border: heroTheme === 'purple' ? '2px solid #FFF' : 'none',
+              cursor: 'pointer',
+              boxShadow: heroTheme === 'purple' ? '0 0 8px #8B5CF6' : 'none'
+            }}
+          />
+        </div>
+
+        {/* + Add Property Button */}
         <button
           onClick={onToggleAddProperty}
           style={{
@@ -86,12 +131,12 @@ export default function Navbar({
             padding: '9px 18px',
             borderRadius: '10px',
             border: 'none',
-            background: 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+            background: 'linear-gradient(135deg, #F43F5E 0%, #E11D48 100%)',
             color: '#FFFFFF',
             fontWeight: '700',
             fontSize: '13.5px',
             cursor: isExporting ? 'not-allowed' : 'pointer',
-            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)'
+            boxShadow: '0 4px 14px rgba(244, 63, 94, 0.35)'
           }}
         >
           <Download size={16} /> {isExporting ? 'Generating...' : 'Export Report (TXT)'}
@@ -114,16 +159,16 @@ export default function Navbar({
           }}
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
-          {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#2563EB" />}
+          {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#F43F5E" />}
         </button>
 
-        {/* User Profile Badge matching Screenshot 1 */}
+        {/* User Profile Badge */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginLeft: '8px', paddingLeft: '14px', borderLeft: '1px solid var(--border-color)' }}>
           <div style={{
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #38BDF8 0%, #2563EB 100%)',
+            background: 'linear-gradient(135deg, #F43F5E 0%, #8B5CF6 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
