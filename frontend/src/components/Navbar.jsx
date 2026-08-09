@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Plus, Sun, Moon, Download, Palette } from 'lucide-react';
+import { Search, Plus, Sun, Moon, Download } from 'lucide-react';
 
 export default function Navbar({
   theme,
@@ -59,16 +59,16 @@ export default function Navbar({
         {/* Color Theme Accent Pills */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px', borderRadius: '10px', background: 'var(--input-bg)', border: '1px solid var(--border-color)' }}>
           <button
-            onClick={() => setHeroTheme('red')}
-            title="Crimson Red Theme"
+            onClick={() => setHeroTheme('gold')}
+            title="Luxury Gold Theme"
             style={{
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, #F43F5E 0%, #BE123C 100%)',
-              border: heroTheme === 'red' ? '2px solid #FFF' : 'none',
+              background: 'linear-gradient(135deg, #FBBF24 0%, #D97706 100%)',
+              border: heroTheme === 'gold' ? '2px solid #FFF' : 'none',
               cursor: 'pointer',
-              boxShadow: heroTheme === 'red' ? '0 0 8px #F43F5E' : 'none'
+              boxShadow: heroTheme === 'gold' ? '0 0 8px #F59E0B' : 'none'
             }}
           />
           <button
@@ -131,12 +131,12 @@ export default function Navbar({
             padding: '9px 18px',
             borderRadius: '10px',
             border: 'none',
-            background: 'linear-gradient(135deg, #F43F5E 0%, #E11D48 100%)',
+            background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
             color: '#FFFFFF',
             fontWeight: '700',
             fontSize: '13.5px',
             cursor: isExporting ? 'not-allowed' : 'pointer',
-            boxShadow: '0 4px 14px rgba(244, 63, 94, 0.35)'
+            boxShadow: '0 4px 14px rgba(245, 158, 11, 0.35)'
           }}
         >
           <Download size={16} /> {isExporting ? 'Generating...' : 'Export Report (TXT)'}
@@ -159,7 +159,7 @@ export default function Navbar({
           }}
           title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
         >
-          {theme === 'dark' ? <Sun size={18} color="#F59E0B" /> : <Moon size={18} color="#F43F5E" />}
+          {theme === 'dark' ? <Sun size={18} color="#FBBF24" /> : <Moon size={18} color="#D97706" />}
         </button>
 
         {/* User Profile Badge */}
@@ -168,7 +168,7 @@ export default function Navbar({
             width: '36px',
             height: '36px',
             borderRadius: '50%',
-            background: 'linear-gradient(135deg, #F43F5E 0%, #8B5CF6 100%)',
+            background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',

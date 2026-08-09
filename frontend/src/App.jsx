@@ -11,8 +11,8 @@ import BenchmarkTab from './components/BenchmarkTab';
 import { Map, BarChart3, Sliders, Building, Award } from 'lucide-react';
 
 export default function App() {
-  const [theme, setTheme] = useState('dark'); // Dark Mode by default with rich obsidian & crimson accent
-  const [heroTheme, setHeroTheme] = useState('red'); // Crimson Red Valuation Dashboard Accent!
+  const [theme, setTheme] = useState('dark'); // Dark Mode by default
+  const [heroTheme, setHeroTheme] = useState('gold'); // Luxury Gold Valuation Dashboard Accent!
   const [cities, setCities] = useState(null);
   const [economicHubs, setEconomicHubs] = useState(null);
   const [selectedCity, setSelectedCity] = useState('Los Angeles');

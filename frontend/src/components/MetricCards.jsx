@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sparkles, ShieldCheck, Clock } from 'lucide-react';
 
-export default function MetricCards({ prediction, mispricing, selectedCity, heroTheme = 'red' }) {
+export default function MetricCards({ prediction, mispricing, selectedCity, heroTheme = 'gold' }) {
   if (!prediction || !mispricing) return null;
 
   const predUSD = prediction.predicted_price_usd || 0;
@@ -20,17 +20,17 @@ export default function MetricCards({ prediction, mispricing, selectedCity, hero
     ? 'hero-card-blue'
     : heroTheme === 'purple'
     ? 'hero-card-purple'
-    : 'hero-card-red';
+    : 'hero-card-gold';
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Hero Valuation Card */}
       <div className={cardClass}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-          <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.9, display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.95, display: 'flex', alignItems: 'center', gap: '6px' }}>
             <Sparkles size={16} /> AI Estimated Fair Value
           </span>
-          <span className={`badge ${badgeStyle}`} style={{ fontSize: '13px', background: 'rgba(255, 255, 255, 0.22)', color: '#FFF', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
+          <span className={`badge ${badgeStyle}`} style={{ fontSize: '13px', background: 'rgba(255, 255, 255, 0.25)', color: '#FFF', border: '1px solid rgba(255, 255, 255, 0.4)' }}>
             {status}
           </span>
         </div>
@@ -49,9 +49,9 @@ export default function MetricCards({ prediction, mispricing, selectedCity, hero
           </span>
         </div>
 
-        <hr style={{ border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.25)', margin: '16px 0 12px 0' }} />
+        <hr style={{ border: 'none', borderTop: '1px solid rgba(255, 255, 255, 0.3)', margin: '16px 0 12px 0' }} />
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12.5px', opacity: 0.85 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12.5px', opacity: 0.9 }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
             <Clock size={14} /> Updated just now
           </span>
