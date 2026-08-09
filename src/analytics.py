@@ -6,6 +6,9 @@ import shap
 from geopy.distance import geodesic
 from sklearn.neighbors import NearestNeighbors
 
+# Base directory setup for reliable path resolution
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 # Reference coordinates for spatial calculations
 ECONOMIC_HUBS = {
     "dist_sf": (37.7749, -122.4194),
@@ -31,6 +34,7 @@ MODEL_FEATURES = [
     "dist_sf", "dist_la", "dist_sj", "dist_sd", "dist_coastline"
 ]
 
+# Global artifact caches
 _scaler = None
 _kmeans = None
 _clustered_df = None
@@ -38,23 +42,43 @@ _cluster_models = {}
 _cluster_lower_models = {}
 _cluster_upper_models = {}
 
+def get_path(relative_path: str) -> str:
+    """Helper to get absolute path relative to project root."""
+    return os.path.join(BASE_DIR, relative_path)
+
 def load_artifacts():
     """Lazy loads scaler, kmeans, and LightGBM model artifacts into memory."""
     global _scaler, _kmeans, _clustered_df, _cluster_models, _cluster_lower_models, _cluster_upper_models
 
     if _scaler is None:
-        _scaler = joblib.load("models/scaler.joblib")
-    if _kmeans is None:
-        _kmeans = joblib.load("models/kmeans.joblib")
-    if _clustered_df is None:
-        _clustered_df = pd.read_csv("data/clustered_housing.csv")
+        scaler_file = get_path("models/scaler.joblib")
+        if not os.path.exists(scaler_file):
+            raise FileNotFoundError(f"Scaler artifact missing: {scaler_file}")
+        _scaler = joblib.load(scaler_file)
 
+    if _kmeans is None:
+        kmeans_file = get_path("models/kmeans.joblib")
+        if not os.path.exists(kmeans_file):
+            raise FileNotFoundError(f"KMeans artifact missing: {kmeans_file}")
+        _kmeans = joblib.load(kmeans_file)
+
+    if _clustered_df is None:
+        df_file = get_path("data/clustered_housing.csv")
+        if not os.path.exists(df_file):
+            raise FileNotFoundError(f"Clustered dataset missing: {df_file}")
+        _clustered_df = pd.read_csv(df_file)
+
+    assert _clustered_df is not None
     clusters = _clustered_df["Cluster"].unique()
     for c_id in clusters:
         if c_id not in _cluster_models:
-            _cluster_models[c_id] = joblib.load(f"models/lgbm_cluster_{c_id}.joblib")
-            _cluster_lower_models[c_id] = joblib.load(f"models/lgbm_lower_cluster_{c_id}.joblib")
-            _cluster_upper_models[c_id] = joblib.load(f"models/lgbm_upper_cluster_{c_id}.joblib")
+            main_path = get_path(f"models/lgbm_cluster_{c_id}.joblib")
+            lower_path = get_path(f"models/lgbm_lower_cluster_{c_id}.joblib")
+            upper_path = get_path(f"models/lgbm_upper_cluster_{c_id}.joblib")
+            
+            _cluster_models[c_id] = joblib.load(main_path)
+            _cluster_lower_models[c_id] = joblib.load(lower_path)
+            _cluster_upper_models[c_id] = joblib.load(upper_path)
 
 def preprocess_input(input_dict: dict) -> pd.DataFrame:
     """Preprocesses a single property input dictionary into a feature DataFrame."""
@@ -100,6 +124,8 @@ def preprocess_input(input_dict: dict) -> pd.DataFrame:
 def predict_property_price(input_dict: dict) -> dict:
     """Assigns cluster and returns point prediction + 90% confidence bounds."""
     load_artifacts()
+    assert _scaler is not None and _kmeans is not None
+
     df_feat = preprocess_input(input_dict)
 
     # Scale cluster features & predict cluster
@@ -134,14 +160,18 @@ def explain_prediction_shap(input_dict: dict) -> pd.DataFrame:
 
     model = _cluster_models[cluster_id]
     explainer = shap.TreeExplainer(model)
-    shap_values = explainer.shap_values(df_feat)
+    shap_exp = explainer(df_feat)
 
-    if isinstance(shap_values, list):
-        shap_vals = shap_values[0][0]
-    elif len(shap_values.shape) == 2:
-        shap_vals = shap_values[0]
+    # Handle various SHAP return object formats across versions
+    if hasattr(shap_exp, "values"):
+        shap_vals = shap_exp.values[0]
+    elif isinstance(shap_exp, list):
+        shap_vals = np.array(shap_exp[0]).flatten()
     else:
-        shap_vals = shap_values
+        shap_vals = np.array(shap_exp).flatten()
+
+    if shap_vals.ndim > 1:
+        shap_vals = shap_vals[0]
 
     df_shap = pd.DataFrame({
         "Feature": MODEL_FEATURES,
@@ -154,6 +184,8 @@ def explain_prediction_shap(input_dict: dict) -> pd.DataFrame:
 def find_comparable_properties(input_dict: dict, top_n: int = 5) -> pd.DataFrame:
     """Finds top N nearest comparable sales within the same micro-market cluster."""
     load_artifacts()
+    assert _scaler is not None and _clustered_df is not None
+
     res = predict_property_price(input_dict)
     cluster_id = res["cluster_id"]
     df_feat = preprocess_input(input_dict)
@@ -162,8 +194,10 @@ def find_comparable_properties(input_dict: dict, top_n: int = 5) -> pd.DataFrame
     if len(cluster_data) == 0:
         cluster_data = _clustered_df.copy()
 
-    # Nearest neighbors on normalized spatial & economic features
-    nn_cols = ["Latitude", "Longitude", "MedInc", "HouseAge", "dist_coastline"]
+    if "RoomsPerHousehold" not in cluster_data.columns and "AveRooms" in cluster_data.columns:
+        cluster_data["RoomsPerHousehold"] = cluster_data["AveRooms"]
+
+    # Nearest neighbors on normalized cluster features
     X_cluster_nn = _scaler.transform(cluster_data[CLUSTER_FEATURES])
     X_input_nn = _scaler.transform(df_feat[CLUSTER_FEATURES])
 
