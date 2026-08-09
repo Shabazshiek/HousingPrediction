@@ -22,6 +22,18 @@ COASTLINE_POINTS = [
     (36.6002, -121.8947), (37.7749, -122.4194), (38.3317, -123.0481)
 ]
 
+CALIFORNIA_CITIES = {
+    "San Francisco": {"lat": 37.7749, "lon": -122.4194, "med_inc": 9.5, "zoom": 12},
+    "San Jose (Silicon Valley)": {"lat": 37.3382, "lon": -121.8863, "med_inc": 10.5, "zoom": 12},
+    "Los Angeles": {"lat": 34.0522, "lon": -118.2437, "med_inc": 7.5, "zoom": 11},
+    "San Diego": {"lat": 32.7157, "lon": -117.1611, "med_inc": 8.0, "zoom": 11},
+    "Sacramento": {"lat": 38.5816, "lon": -121.4944, "med_inc": 6.5, "zoom": 12},
+    "Irvine (Orange County)": {"lat": 33.6846, "lon": -117.8265, "med_inc": 9.0, "zoom": 12},
+    "Santa Barbara": {"lat": 34.4208, "lon": -119.6982, "med_inc": 8.5, "zoom": 12},
+    "Oakland / East Bay": {"lat": 37.8044, "lon": -122.2712, "med_inc": 8.0, "zoom": 12},
+    "Fresno (Central Valley)": {"lat": 36.7468, "lon": -119.7726, "med_inc": 4.5, "zoom": 11}
+}
+
 CLUSTER_FEATURES = [
     "Latitude", "Longitude", "MedInc", "HouseAge", 
     "RoomsPerHousehold", "BedroomsPerRoom", 

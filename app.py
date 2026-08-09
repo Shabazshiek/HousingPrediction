@@ -17,7 +17,8 @@ from src.analytics import (
     find_comparable_properties,
     detect_mispricing,
     get_cluster_benchmark_summary,
-    ECONOMIC_HUBS
+    ECONOMIC_HUBS,
+    CALIFORNIA_CITIES
 )
 
 st.set_page_config(
@@ -49,27 +50,81 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🏠 California Housing AI Valuation & Intelligence Engine")
-st.caption("Micro-Market Clustering • Quantile LightGBM Models • SHAP Explainability • Spatial Comps Analytics")
+st.title("🏠 California Real Estate AI Valuation & Buyer Advisor")
+st.caption("City-Based Micro-Market Clustering • Quantile LightGBM Models • SHAP Explainability • Spatial Comps Engine")
 
 # Sidebar Property Input Form
-st.sidebar.header("📍 Property Location & Specifications")
+st.sidebar.header("🌆 Location & Property Specs")
 
-lat = st.sidebar.slider("Latitude", 32.5, 42.0, 37.7749, step=0.01)
-lon = st.sidebar.slider("Longitude", -124.5, -114.0, -122.4194, step=0.01)
-med_inc = st.sidebar.slider("Median Household Income ($10k)", 0.5, 15.0, 8.5, step=0.1)
-house_age = st.sidebar.slider("House Age (Years)", 1.0, 52.0, 25.0, step=1.0)
+selected_city_name = st.sidebar.selectbox(
+    "Select California City / Region",
+    list(CALIFORNIA_CITIES.keys()),
+    index=0
+)
+
+city_info = CALIFORNIA_CITIES[selected_city_name]
+base_lat = city_info["lat"]
+base_lon = city_info["lon"]
+city_zoom = city_info["zoom"]
+
+with st.sidebar.expander("📍 Fine-Tune Exact Location (Optional)"):
+    lat = st.slider("Latitude Offset", base_lat - 0.3, base_lat + 0.3, base_lat, step=0.005)
+    lon = st.slider("Longitude Offset", base_lon - 0.3, base_lon + 0.3, base_lon, step=0.005)
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("📐 Property Dimensions")
-total_rooms = st.sidebar.number_input("Total Rooms", min_value=1.0, max_value=20.0, value=6.0, step=1.0)
-total_bedrooms = st.sidebar.number_input("Total Bedrooms", min_value=1.0, max_value=10.0, value=1.0, step=1.0)
-population = st.sidebar.number_input("Neighborhood Population", min_value=1.0, max_value=100.0, value=3.0, step=1.0)
-households = st.sidebar.number_input("Households", min_value=1.0, max_value=20.0, value=2.5, step=0.5)
+st.sidebar.subheader("📐 Home Specifications")
+
+bedrooms_str = st.sidebar.selectbox(
+    "🛏️ Bedrooms",
+    ["1 Bedroom", "2 Bedrooms", "3 Bedrooms", "4 Bedrooms", "5+ Bedrooms"],
+    index=2
+)
+num_bedrooms = float(bedrooms_str.split()[0].replace("+", ""))
+
+total_rooms = st.sidebar.slider(
+    "🚪 Total Rooms (incl. living/dining)",
+    min_value=2, max_value=16, value=max(5, int(num_bedrooms * 2)), step=1
+)
+
+age_category = st.sidebar.selectbox(
+    "🏗️ Property Age",
+    ["Brand New (< 5 yrs)", "Modern (5-15 yrs)", "Established (15-30 yrs)", "Vintage (30+ yrs)"],
+    index=2
+)
+
+age_map = {
+    "Brand New (< 5 yrs)": 3.0,
+    "Modern (5-15 yrs)": 10.0,
+    "Established (15-30 yrs)": 22.0,
+    "Vintage (30+ yrs)": 40.0
+}
+house_age = age_map[age_category]
+
+income_tier = st.sidebar.selectbox(
+    "💰 Neighborhood Income Level",
+    [
+        "Moderate Income (~$45k)",
+        "Middle Class (~$75k)",
+        "High Income (~$105k)",
+        "Ultra-High Income (~$135k+)"
+    ],
+    index=1
+)
+
+income_map = {
+    "Moderate Income (~$45k)": 4.5,
+    "Middle Class (~$75k)": 7.5,
+    "High Income (~$105k)": 10.5,
+    "Ultra-High Income (~$135k+)": 13.5
+}
+med_inc = income_map[income_tier]
 
 st.sidebar.markdown("---")
-st.sidebar.subheader("💰 Listing Verification")
-actual_price = st.sidebar.number_input("Actual Listed Price ($)", min_value=0.0, max_value=3000000.0, value=450000.0, step=10000.0)
+st.sidebar.subheader("💵 Target Listing Verification")
+actual_price = st.sidebar.number_input(
+    "Asking Listed Price ($ USD)",
+    min_value=50000.0, max_value=5000000.0, value=650000.0, step=25000.0
+)
 
 # Construct Input Dict
 input_dict = {
@@ -77,10 +132,10 @@ input_dict = {
     "Longitude": lon,
     "MedInc": med_inc,
     "HouseAge": house_age,
-    "TotalRooms": total_rooms,
-    "TotalBedrooms": total_bedrooms,
-    "Population": population,
-    "Households": households
+    "TotalRooms": float(total_rooms),
+    "TotalBedrooms": num_bedrooms,
+    "Population": 3.0,
+    "Households": 2.5
 }
 
 # Run Analytics Engine
@@ -143,7 +198,7 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 with tab1:
     st.subheader("Geospatial Positioning & California Economic Hub Distances")
     
-    m = folium.Map(location=[lat, lon], zoom_start=9, tiles="CartoDB dark_matter")
+    m = folium.Map(location=[lat, lon], zoom_start=city_zoom, tiles="CartoDB dark_matter")
 
     # Add Target Property Marker
     folium.Marker(
@@ -209,7 +264,7 @@ with tab3:
     with sim_col1:
         st.markdown("#### Adjust Parameters:")
         sim_income = st.slider("Simulated Income ($10k)", 0.5, 15.0, med_inc, step=0.1)
-        sim_rooms = st.slider("Simulated Total Rooms", 1.0, 20.0, total_rooms, step=1.0)
+        sim_rooms = st.slider("Simulated Total Rooms", 1.0, 20.0, float(total_rooms), step=1.0)
         sim_age = st.slider("Simulated House Age", 1.0, 52.0, house_age, step=1.0)
 
         sim_input = input_dict.copy()
