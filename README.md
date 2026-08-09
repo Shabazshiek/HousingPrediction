@@ -126,6 +126,8 @@ FastAPI automatically generates interactive OpenAPI documentation:
 
 ---
 
-## 📜 License
+## 📜 License & Copyright
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Copyright (c) 2026 Shabaz Shiek.
+
+Distributed under the MIT License. See [LICENSE](file:///d:/HousingPrediction/LICENSE) for more details.
